@@ -58,9 +58,9 @@ const TimerSettings = ({
             </div>
             <Slider
               id="work-duration"
-              min={5}
+              min={1}
               max={60}
-              step={5}
+              step={1}
               value={[tempWorkDuration]}
               onValueChange={(value) => setTempWorkDuration(value[0])}
               className="w-full"
