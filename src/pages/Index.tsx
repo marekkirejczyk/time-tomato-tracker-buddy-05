@@ -4,17 +4,17 @@ import { Play, Pause, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import TimerSettings from '@/components/TimerSettings';
 
 const Index = () => {
-  const [timeLeft, setTimeLeft] = useState(25 * 60); // 25 minutes in seconds
+  const [workDuration, setWorkDuration] = useState(25 * 60); // 25 minutes in seconds
+  const [breakDuration, setBreakDuration] = useState(5 * 60); // 5 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(workDuration);
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
   const [sessionsCompleted, setSessionsCompleted] = useState(0);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
   const { toast } = useToast();
-
-  const workDuration = 25 * 60; // 25 minutes
-  const breakDuration = 5 * 60; // 5 minutes
 
   useEffect(() => {
     if (isActive && timeLeft > 0) {
@@ -62,6 +62,20 @@ const Index = () => {
     }
   };
 
+  const handleWorkDurationChange = (duration: number) => {
+    setWorkDuration(duration);
+    if (!isBreak && !isActive) {
+      setTimeLeft(duration);
+    }
+  };
+
+  const handleBreakDurationChange = (duration: number) => {
+    setBreakDuration(duration);
+    if (isBreak && !isActive) {
+      setTimeLeft(duration);
+    }
+  };
+
   const formatTime = (seconds: number) => {
     const mins = Math.floor(seconds / 60);
     const secs = seconds % 60;
@@ -79,7 +93,15 @@ const Index = () => {
     <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-gray-800 mb-2">Pomodoro Timer</h1>
+          <div className="flex items-center justify-center gap-4 mb-4">
+            <h1 className="text-4xl font-bold text-gray-800">Pomodoro Timer</h1>
+            <TimerSettings
+              workDuration={workDuration}
+              breakDuration={breakDuration}
+              onWorkDurationChange={handleWorkDurationChange}
+              onBreakDurationChange={handleBreakDurationChange}
+            />
+          </div>
           <p className="text-gray-600">Stay focused, stay productive</p>
         </div>
 
@@ -190,7 +212,7 @@ const Index = () => {
 
         {/* Tips */}
         <div className="mt-8 text-center text-sm text-gray-600">
-          <p className="mb-1">💡 <strong>Tip:</strong> Focus for 25 minutes, then take a 5-minute break</p>
+          <p className="mb-1">💡 <strong>Tip:</strong> Customize your work and break durations using the settings</p>
           <p>🎯 Complete 4 sessions, then take a longer 15-30 minute break</p>
         </div>
       </div>
