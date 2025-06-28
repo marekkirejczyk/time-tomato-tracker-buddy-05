@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -26,16 +25,27 @@ const TimerSettings = ({
   onWorkDurationChange,
   onBreakDurationChange,
 }: TimerSettingsProps) => {
+  const [isOpen, setIsOpen] = useState(false);
   const [tempWorkDuration, setTempWorkDuration] = useState(workDuration / 60);
   const [tempBreakDuration, setTempBreakDuration] = useState(breakDuration / 60);
 
   const handleSave = () => {
     onWorkDurationChange(tempWorkDuration * 60);
     onBreakDurationChange(tempBreakDuration * 60);
+    setIsOpen(false);
+  };
+
+  const handleOpenChange = (open: boolean) => {
+    setIsOpen(open);
+    if (open) {
+      // Reset temp values when opening the dialog
+      setTempWorkDuration(workDuration / 60);
+      setTempBreakDuration(breakDuration / 60);
+    }
   };
 
   return (
-    <Dialog>
+    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" size="icon" className="rounded-full">
           <Settings className="w-4 h-4" />
