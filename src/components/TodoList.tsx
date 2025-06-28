@@ -1,6 +1,5 @@
-
 import { useState, useEffect } from 'react';
-import { Plus, Check, X, ListTodo, Archive } from 'lucide-react';
+import { Plus, Check, X, ListTodo, Archive, EyeOff, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -12,11 +11,23 @@ interface Todo {
   completed: boolean;
 }
 
-const TodoList = () => {
+interface TodoListProps {
+  hideBacklog?: boolean;
+}
+
+const TodoList = ({ hideBacklog = false }: TodoListProps) => {
   const [pomodoroTodos, setPomodoroTodos] = useState<Todo[]>([]);
   const [backlogTodos, setBacklogTodos] = useState<Todo[]>([]);
   const [newTodo, setNewTodo] = useState('');
   const [newBacklogTodo, setNewBacklogTodo] = useState('');
+  const [isBacklogVisible, setIsBacklogVisible] = useState(true);
+
+  // Hide backlog when hideBacklog prop changes
+  useEffect(() => {
+    if (hideBacklog) {
+      setIsBacklogVisible(false);
+    }
+  }, [hideBacklog]);
 
   // Load todos from localStorage on component mount
   useEffect(() => {
@@ -101,6 +112,10 @@ const TodoList = () => {
         addPomodoroTodo();
       }
     }
+  };
+
+  const toggleBacklogVisibility = () => {
+    setIsBacklogVisible(!isBacklogVisible);
   };
 
   const onDragEnd = (result: DropResult) => {
@@ -192,6 +207,21 @@ const TodoList = () => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="space-y-4">
+        {/* Header with toggle */}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <Button
+              onClick={toggleBacklogVisibility}
+              size="sm"
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              {isBacklogVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+              {isBacklogVisible ? 'Hide' : 'Show'} Backlog
+            </Button>
+          </div>
+        </div>
+
         {/* Pomodoro Tasks */}
         <Card className="backdrop-blur-sm bg-white/80 shadow-xl border-0">
           <CardHeader className="pb-3">
@@ -242,55 +272,57 @@ const TodoList = () => {
           </CardContent>
         </Card>
 
-        {/* Task Backlog */}
-        <Card className="backdrop-blur-sm bg-white/80 shadow-xl border-0">
-          <CardHeader className="pb-3">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Archive className="w-5 h-5" />
-              Task Backlog
-              {totalBacklogCount > 0 && (
-                <span className="text-sm font-normal text-gray-500">
-                  ({completedBacklogCount}/{totalBacklogCount})
-                </span>
-              )}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex gap-2 mb-4">
-              <Input
-                value={newBacklogTodo}
-                onChange={(e) => setNewBacklogTodo(e.target.value)}
-                onKeyPress={(e) => handleKeyPress(e, true)}
-                placeholder="Add a task to your backlog..."
-                className="flex-1"
-              />
-              <Button onClick={addBacklogTodo} size="sm" className="px-3">
-                <Plus className="w-4 h-4" />
-              </Button>
-            </div>
-            
-            <Droppable droppableId="backlog">
-              {(provided, snapshot) => (
-                <div
-                  {...provided.droppableProps}
-                  ref={provided.innerRef}
-                  className={`space-y-2 max-h-48 overflow-y-auto min-h-[100px] p-2 rounded-lg border-2 border-dashed transition-colors ${
-                    snapshot.isDraggingOver ? 'border-blue-300 bg-blue-50' : 'border-gray-200'
-                  }`}
-                >
-                  {backlogTodos.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4 text-sm">
-                      Add tasks to your backlog for future sessions
-                    </p>
-                  ) : (
-                    backlogTodos.map((todo, index) => renderTodoItem(todo, index, false))
-                  )}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </CardContent>
-        </Card>
+        {/* Task Backlog - conditionally rendered */}
+        {isBacklogVisible && (
+          <Card className="backdrop-blur-sm bg-white/80 shadow-xl border-0">
+            <CardHeader className="pb-3">
+              <CardTitle className="flex items-center gap-2 text-lg">
+                <Archive className="w-5 h-5" />
+                Task Backlog
+                {totalBacklogCount > 0 && (
+                  <span className="text-sm font-normal text-gray-500">
+                    ({completedBacklogCount}/{totalBacklogCount})
+                  </span>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-2 mb-4">
+                <Input
+                  value={newBacklogTodo}
+                  onChange={(e) => setNewBacklogTodo(e.target.value)}
+                  onKeyPress={(e) => handleKeyPress(e, true)}
+                  placeholder="Add a task to your backlog..."
+                  className="flex-1"
+                />
+                <Button onClick={addBacklogTodo} size="sm" className="px-3">
+                  <Plus className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              <Droppable droppableId="backlog">
+                {(provided, snapshot) => (
+                  <div
+                    {...provided.droppableProps}
+                    ref={provided.innerRef}
+                    className={`space-y-2 max-h-48 overflow-y-auto min-h-[100px] p-2 rounded-lg border-2 border-dashed transition-colors ${
+                      snapshot.isDraggingOver ? 'border-blue-300 bg-blue-50' : 'border-gray-200'
+                    }`}
+                  >
+                    {backlogTodos.length === 0 ? (
+                      <p className="text-gray-500 text-center py-4 text-sm">
+                        Add tasks to your backlog for future sessions
+                      </p>
+                    ) : (
+                      backlogTodos.map((todo, index) => renderTodoItem(todo, index, false))
+                    )}
+                    {provided.placeholder}
+                  </div>
+                )}
+              </Droppable>
+            </CardContent>
+          </Card>
+        )}
       </div>
     </DragDropContext>
   );

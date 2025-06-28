@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from 'react';
 import { Play, Pause, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -213,7 +214,7 @@ const Index = () => {
           </Card>
 
           {/* Todo List Section */}
-          <TodoList />
+          <TodoList hideBacklog={isActive && !isBreak} />
         </div>
 
         {/* Tips */}
