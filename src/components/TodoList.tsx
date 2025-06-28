@@ -75,20 +75,20 @@ const TodoList = ({ hideBacklog = false }: TodoListProps) => {
   return (
     <DragDropContext onDragEnd={onDragEnd}>
       <div className="space-y-4">
-        {/* Header with toggle */}
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        {/* Show backlog button when hidden */}
+        {!isBacklogVisible && (
+          <div className="flex justify-center">
             <Button
               onClick={toggleBacklogVisibility}
               size="sm"
               variant="outline"
               className="flex items-center gap-2"
             >
-              {isBacklogVisible ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-              {isBacklogVisible ? 'Hide' : 'Show'} Backlog
+              <Eye className="w-4 h-4" />
+              Show Backlog
             </Button>
           </div>
-        </div>
+        )}
 
         {/* Pomodoro Tasks */}
         <TodoSection
@@ -115,6 +115,17 @@ const TodoList = ({ hideBacklog = false }: TodoListProps) => {
             placeholder="Add a task to your backlog..."
             droppableId="backlog"
             emptyMessage="Add tasks to your backlog for future sessions"
+            headerAction={
+              <Button
+                onClick={toggleBacklogVisibility}
+                size="sm"
+                variant="ghost"
+                className="flex items-center gap-2 text-gray-500 hover:text-gray-700"
+              >
+                <EyeOff className="w-4 h-4" />
+                Hide
+              </Button>
+            }
           />
         )}
       </div>

@@ -16,6 +16,7 @@ interface TodoSectionProps {
   placeholder: string;
   droppableId: string;
   emptyMessage: string;
+  headerAction?: ReactNode;
 }
 
 const TodoSection = ({ 
@@ -27,7 +28,8 @@ const TodoSection = ({
   onDelete, 
   placeholder, 
   droppableId, 
-  emptyMessage 
+  emptyMessage,
+  headerAction
 }: TodoSectionProps) => {
   const completedCount = todos.filter(todo => todo.completed).length;
   const totalCount = todos.length;
@@ -35,14 +37,17 @@ const TodoSection = ({
   return (
     <Card className="backdrop-blur-sm bg-white/80 shadow-xl border-0">
       <CardHeader className="pb-3">
-        <CardTitle className="flex items-center gap-2 text-lg">
-          {icon}
-          {title}
-          {totalCount > 0 && (
-            <span className="text-sm font-normal text-gray-500">
-              ({completedCount}/{totalCount})
-            </span>
-          )}
+        <CardTitle className="flex items-center justify-between">
+          <div className="flex items-center gap-2 text-lg">
+            {icon}
+            {title}
+            {totalCount > 0 && (
+              <span className="text-sm font-normal text-gray-500">
+                ({completedCount}/{totalCount})
+              </span>
+            )}
+          </div>
+          {headerAction}
         </CardTitle>
       </CardHeader>
       <CardContent>
