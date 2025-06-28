@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { ListTodo, Archive, EyeOff, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -74,22 +73,7 @@ const TodoList = ({ hideBacklog = false }: TodoListProps) => {
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>
-      <div className="space-y-4">
-        {/* Show backlog button when hidden */}
-        {!isBacklogVisible && (
-          <div className="flex justify-center">
-            <Button
-              onClick={toggleBacklogVisibility}
-              size="sm"
-              variant="outline"
-              className="flex items-center gap-2"
-            >
-              <Eye className="w-4 h-4" />
-              Show Backlog
-            </Button>
-          </div>
-        )}
-
+      <div className={`${isBacklogVisible ? 'space-y-4' : 'h-full flex flex-col'}`}>
         {/* Pomodoro Tasks */}
         <TodoSection
           title="Pomodoro Tasks"
@@ -101,6 +85,7 @@ const TodoList = ({ hideBacklog = false }: TodoListProps) => {
           placeholder="Add a task for this session..."
           droppableId="pomodoro"
           emptyMessage="Add tasks to focus on during your Pomodoro session"
+          className={!isBacklogVisible ? 'flex-1' : ''}
         />
 
         {/* Task Backlog - conditionally rendered */}
@@ -127,6 +112,20 @@ const TodoList = ({ hideBacklog = false }: TodoListProps) => {
               </Button>
             }
           />
+        )}
+        {/* Show backlog button when hidden */}
+        {!isBacklogVisible && (
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={toggleBacklogVisibility}
+              size="sm"
+              variant="outline"
+              className="flex items-center gap-2"
+            >
+              <Eye className="w-4 h-4" />
+              Show Backlog
+            </Button>
+          </div>
         )}
       </div>
     </DragDropContext>
