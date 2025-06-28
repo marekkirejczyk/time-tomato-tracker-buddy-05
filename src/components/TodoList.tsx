@@ -1,8 +1,9 @@
+
 import { useState, useEffect } from 'react';
 import { ListTodo, Archive, EyeOff, Eye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { DragDropContext, DropResult } from 'react-beautiful-dnd';
-import { useTodos } from '@/hooks/useTodos';
+import { useSupabaseTodos } from '@/hooks/useSupabaseTodos';
 import TodoSection from './TodoSection';
 
 interface TodoListProps {
@@ -22,7 +23,8 @@ const TodoList = ({ hideBacklog = false }: TodoListProps) => {
     toggleBacklogTodo,
     deletePomodoroTodo,
     deleteBacklogTodo,
-  } = useTodos();
+    loading,
+  } = useSupabaseTodos();
 
   // Hide backlog when hideBacklog prop changes
   useEffect(() => {
@@ -70,6 +72,14 @@ const TodoList = ({ hideBacklog = false }: TodoListProps) => {
       }
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+      </div>
+    );
+  }
 
   return (
     <DragDropContext onDragEnd={onDragEnd}>

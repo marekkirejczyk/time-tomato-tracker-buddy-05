@@ -4,10 +4,14 @@ import { Play, Pause, RotateCcw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
+import { useAuth } from '@/hooks/useAuth';
 import TimerSettings from '@/components/TimerSettings';
 import TodoList from '@/components/TodoList';
+import AuthForm from '@/components/auth/AuthForm';
+import Header from '@/components/Header';
 
 const Index = () => {
+  const { user, loading } = useAuth();
   const [workDuration, setWorkDuration] = useState(25 * 60); // 25 minutes in seconds
   const [breakDuration, setBreakDuration] = useState(5 * 60); // 5 minutes in seconds
   const [timeLeft, setTimeLeft] = useState(workDuration);
@@ -90,8 +94,22 @@ const Index = () => {
   const circumference = 2 * Math.PI * 120;
   const strokeDashoffset = circumference - (progress / 100) * circumference;
 
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-red-500"></div>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return <AuthForm />;
+  }
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-red-50 via-orange-50 to-yellow-50 flex items-center justify-center p-4 relative">
+      <Header />
+      
       <div className="w-full max-w-4xl">
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-4 mb-4">
